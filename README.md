@@ -1,7 +1,3 @@
-Here's a **README** tailored for your **NBA analysis** project on GitHub:
-
----
-
 # NBA Analysis: Player and Team Performance Prediction
 
 ## Overview
@@ -114,5 +110,3 @@ These visualizations provide deeper insights into the data and help understand t
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
