@@ -49,7 +49,7 @@ NBA_Analysis/
 ├── saved_jupyter_notebooks/   # Folder containing Jupyter notebooks for model training
 │   ├── player_performance_model_training.ipynb
 │   └── team_performance_model_training.ipynb
-└── requirements.txt           # Required Python packages for the project
+└── req.txt           # Required Python packages for the project
 ```
 
 ## Installation
@@ -65,7 +65,7 @@ Ensure that you have Python 3.x installed. You can install the required dependen
 
 2. Install dependencies:
     ```bash
-    pip install -r requirements.txt
+    pip install -r req.txt
     ```
 
 3. Ensure you have access to the necessary APIs (NBA API and Basketball Reference), and set up any environment variables or credentials as needed.
