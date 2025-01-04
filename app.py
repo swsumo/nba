@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import os
 import textwrap
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
@@ -19,6 +20,9 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 # Load models
 model_winner = joblib.load("saved_models/xgb_classifier_model.pkl")
 model_pts = joblib.load('saved_models/linear_regression_model_player.pkl')
+
+joined_data = pd.read_csv('combined.csv')
+joined_data = joined_data.set_index('Player')
 
 # Load game data
 @st.cache_data
@@ -36,9 +40,12 @@ games = load_game_data()
 # Load player data
 @st.cache_data
 def load_player_data():
-    joined_data = pd.read_csv('combined.csv').set_index('Player')
+    # Specify the full file path
+    file_path = Path('C:/Users/swapn/Desktop/NBA_2/combined.csv')
+    joined_data = pd.read_csv(file_path).set_index('Player')
     return joined_data
 
+# Load the player data
 player_data = load_player_data()
 
 # Load dataset for analysis
@@ -112,20 +119,23 @@ def nba_player_points_prediction():
     st.markdown("Enter a player's name to predict their points for the 2023-2024 season.")
 
     player_name = st.text_input("Player Name", "")
-
     if player_name:
-        if player_name in player_data.index:
-            player_row = player_data.loc[player_name]
-            player_features = player_row.drop(
-                ['PTS_22', 'Pos_22', 'Pos_23', 'Team_22', 'Team_23', 'Rk_22', 'Rk_23'], axis=1
-            )
-
-            pts_predicted = model_pts.predict(player_features.values.reshape(1, -1))[0]
-            st.write(f"**Predicted Points for {player_name} (2023-2024):** {pts_predicted:.2f}")
-            pts_actual = player_row['PTS_22']
-            st.write(f"Actual Points in 2022-2023: {pts_actual}")
-        else:
-            st.error("Player not found. Please enter a valid player's name.")
+        if player_name in joined_data.index:
+        # Select the player row
+            player_row = joined_data[joined_data.index == player_name]
+            player_features = player_row.drop(['PTS_22', 'Pos_22', 'Pos_23', 'Team_22', 'Team_23', 'Rk_22', 'Rk_23'], axis=1)
+        
+        # Predict the points using the loaded model
+        pts_predicted = model_pts.predict(player_features)[0]  # Extract the scalar value
+        
+        # Show results
+        st.write(f"**Predicted Points for {player_name} (2023-2024):** {float(pts_predicted):.2f}")  # Convert to float for correct formatting
+        
+        # Actual Points (for comparison)
+        pts_actual = player_row[['PTS_22']].values[0]
+        st.write(f"Actual Points in 2022-2023: {pts_actual}")
+    else:
+        st.write("Player not found. Please enter a valid player's name.")
 
 def nba_insights_with_llm():
     st.title("NBA Insights with LLM")
@@ -274,7 +284,5 @@ elif selected_main_page == "Data Analysis":
     nba_analysis()
 
     
-
-
 
 
